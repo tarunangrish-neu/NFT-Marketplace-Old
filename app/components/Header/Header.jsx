@@ -1,12 +1,31 @@
-import React from "react";
+"use client"
+import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { headerStyle } from "./Styles.js";
 import HuskyLogo from "../../assets/HuskyLogo.png";
-import { MdOutlineAccountBalanceWallet } from "react-icons/md";
+
 import {CgProfile } from "react-icons/cg";
 
 const Header = () => {
+    const [isConnected, setIsConnected] = useState(false);
+
+    const connectWalletHandler = async () => {
+        if (window.ethereum) {
+            try {
+                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                console.log('Connected', accounts[0]);
+                if (accounts.length > 0) {
+                    setIsConnected(true);
+                }
+            } catch (error) {
+                console.error('Error connecting to MetaMask', error);
+            }
+        } else {
+            alert('Please install MetaMask!');
+        }
+    };
+
   return (
     <div className={headerStyle.wrapper}>
       <Link href="/">
@@ -27,7 +46,8 @@ const Header = () => {
         <div className={headerStyle.headerItem}> Resources </div>
         <div className={headerStyle.headerItem}> Create </div>
         <div className={headerStyle.headerIcon}> <CgProfile/> </div>
-        <div className={headerStyle.headerIcon}> <MdOutlineAccountBalanceWallet /> </div>
+              {/*<div className={headerStyle.headerIcon}> <MdOutlineAccountBalanceWallet /> </div>*/}
+        <button onClick={connectWalletHandler}>{isConnected ? 'Connected' : 'Connect to Wallet'}</button>
         </div>
     </div>
   );
